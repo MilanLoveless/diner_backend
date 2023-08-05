@@ -1,0 +1,8 @@
+/target
+/coverage
+/secrets
+.env
+configuration.yaml
+/configuration/base.yaml
+/configuration/local.yaml
+/configuration/production.yaml

@@ -1,0 +1,15 @@
+application:
+  port: 8000
+database:
+  host: "localhost"
+  port: 5432
+  username: "postgres"
+  password: "password"
+  database_name: "diner"
+discord:
+  client_id: ""
+  client_secret: ""
+  discord_auth_url: ""
+  pub discord_token_url: ""
+  pub discord_revoke_url: ""
+  pub redirect_url: ""
