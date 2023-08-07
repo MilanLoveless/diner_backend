@@ -1,8 +1,10 @@
-use super::super::connectors::{discord::DiscordApi, oauth::OauthClient};
+use super::super::connectors::{discord::DiscordApi, oauth::OauthClient, session::SessionStore};
 use super::api::models::user;
+use super::types::UserFormData;
 use actix_web::{web, HttpResponse, Scope};
 use serde::Serialize;
 use sqlx::PgPool;
+use uuid::Uuid;
 
 #[derive(Serialize)]
 struct OauthUrlResponse {
@@ -27,7 +29,7 @@ pub struct OauthRedirectData {
 }
 
 #[tracing::instrument(
-    name = "Incoming redirect from Discord Oauth2 flow", skip(data, oauth, pool, discord_api),
+    name = "Incoming redirect from Discord Oauth2 flow", skip(data, oauth, pool, discord_api, session_store),
     fields(
         code = %data.code,
         state = %data.state,
@@ -38,17 +40,31 @@ async fn redirect(
     pool: web::Data<PgPool>,
     oauth: web::Data<OauthClient>,
     discord_api: web::Data<DiscordApi>,
+    session_store: web::Data<SessionStore>,
 ) -> HttpResponse {
     if let Ok(token) = oauth
         .get_token(data.code.to_owned(), data.state.to_owned())
         .await
     {
         if let Ok(discord_user) = discord_api.get_user(token) {
+            let mut user_id: Option<Uuid> = None;
             if let Ok(user_record) = user::get_by_discord_id(&pool, &discord_user.username).await {
-                return HttpResponse::Ok().json(user_record);
+                user_id = Some(user_record.id);
+            } else {
+                let user = UserFormData {
+                    username: discord_user.username,
+                    avatar: discord_user.avatar,
+                };
+                if let Ok(id) = user::insert(&pool, &user).await {
+                    user_id = Some(id);
+                }
+            }
+            if let Some(id) = user_id {
+                if let Ok(session) = session_store.create(id) {
+                    return HttpResponse::Ok().json(session);
+                }
             }
         }
-        return HttpResponse::Ok().finish();
     }
     HttpResponse::InternalServerError().finish()
 }
@@ -63,32 +79,3 @@ pub fn get_oauth2_scope() -> Scope {
         .route("/redirect", web::delete().to(redirect))
         .route("/revoke", web::get().to(revoke))
 }
-
-// #[tracing::instrument(
-//     name = "Saving new subscriber details in the database",
-//     skip(form, pool)
-// )]
-// pub async fn insert_game(pool: &PgPool, form: &FormData) -> Result<(), sqlx::Error> {
-//     sqlx::query!(
-//         r#"
-// INSERT INTO games (id, name, description, link, created_at, updated_at)
-// VALUES ($1, $2, $3, $4, $5, $6)
-//     "#,
-//         Uuid::new_v4(),
-//         form.name,
-//         form.description,
-//         form.link,
-//         Utc::now(),
-//         Utc::now()
-//     )
-//     .execute(pool)
-//     .await
-//     .map_err(|e| {
-//         tracing::error!("Failed to execute query: {:?}", e);
-//         e
-//         // Using the `?` operator to return early
-//         // if the function failed, returning a sqlx::Error
-//         // We will talk about error handling in depth later!
-//     })?;
-//     Ok(())
-// }

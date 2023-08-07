@@ -59,13 +59,14 @@ WHERE discord_id = $1
 }
 
 #[tracing::instrument(name = "Saving new user to the database", skip(form, pool))]
-pub async fn insert(pool: &PgPool, form: &UserFormData) -> Result<(), sqlx::Error> {
+pub async fn insert(pool: &PgPool, form: &UserFormData) -> Result<Uuid, sqlx::Error> {
+    let id = Uuid::new_v4();
     sqlx::query!(
         r#"
 INSERT INTO users (id, discord_id, avatar, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5)
     "#,
-        Uuid::new_v4(),
+        id,
         form.username,
         form.avatar,
         Utc::now(),
@@ -80,7 +81,7 @@ VALUES ($1, $2, $3, $4, $5)
         // if the function failed, returning a sqlx::Error
         // We will talk about error handling in depth later!
     })?;
-    Ok(())
+    Ok(id)
 }
 
 #[tracing::instrument(name = "Updating existing user in the database", skip(form, pool))]

@@ -1,9 +1,8 @@
-use self::{discord::DiscordApi, oauth::OauthClient};
-
 pub mod discord;
 pub mod oauth;
+pub mod session;
 
 pub struct Connectors {
-    pub discord: DiscordApi,
-    pub oauth: OauthClient,
+    pub discord: discord::DiscordApi,
+    pub oauth: oauth::OauthClient,
 }
