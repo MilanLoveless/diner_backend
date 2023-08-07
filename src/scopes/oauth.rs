@@ -1,9 +1,8 @@
-use super::super::connectors::oauth::OauthClient;
-use actix_web::{http, web, HttpResponse, Scope};
-use chrono::Utc;
+use super::super::connectors::{discord::DiscordApi, oauth::OauthClient};
+use super::api::models::user;
+use actix_web::{web, HttpResponse, Scope};
 use serde::Serialize;
 use sqlx::PgPool;
-use uuid::Uuid;
 
 #[derive(Serialize)]
 struct OauthUrlResponse {
@@ -28,7 +27,7 @@ pub struct OauthRedirectData {
 }
 
 #[tracing::instrument(
-    name = "Incoming redirect from Discord Oauth2 flow", skip(data, oauth),
+    name = "Incoming redirect from Discord Oauth2 flow", skip(data, oauth, pool, discord_api),
     fields(
         code = %data.code,
         state = %data.state,
@@ -38,11 +37,17 @@ async fn redirect(
     data: web::Query<OauthRedirectData>,
     pool: web::Data<PgPool>,
     oauth: web::Data<OauthClient>,
+    discord_api: web::Data<DiscordApi>,
 ) -> HttpResponse {
-    let token_result = oauth
+    if let Ok(token) = oauth
         .get_token(data.code.to_owned(), data.state.to_owned())
-        .await;
-    if let Ok(token) = token_result {
+        .await
+    {
+        if let Ok(discord_user) = discord_api.get_user(token) {
+            if let Ok(user_record) = user::get_by_discord_id(&pool, &discord_user.username).await {
+                return HttpResponse::Ok().json(user_record);
+            }
+        }
         return HttpResponse::Ok().finish();
     }
     HttpResponse::InternalServerError().finish()
@@ -58,6 +63,7 @@ pub fn get_oauth2_scope() -> Scope {
         .route("/redirect", web::delete().to(redirect))
         .route("/revoke", web::get().to(revoke))
 }
+
 // #[tracing::instrument(
 //     name = "Saving new subscriber details in the database",
 //     skip(form, pool)

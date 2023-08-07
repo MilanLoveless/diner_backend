@@ -3,13 +3,13 @@ use uuid::Uuid;
 
 #[derive(Deserialize, Serialize)]
 pub struct UserFormData {
-    username: String,
-    avatar: String,
+    pub username: String,
+    pub avatar: String,
 }
 
 #[derive(Deserialize, Serialize)]
 pub struct UserRecord {
-    id: Uuid,
-    username: String,
-    avatar: String,
+    pub id: Uuid,
+    pub username: String,
+    pub avatar: String,
 }

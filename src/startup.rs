@@ -40,6 +40,7 @@ pub fn run(
             .route("/health_check", web::get().to(health_check::health_check))
             .app_data(pool.clone())
             .app_data(oauth.clone())
+            .app_data(discord_api.clone())
     })
     // .bind_openssl("127.0.0.1:8080", ssl_builder)?
     .listen(listener)?

@@ -7,8 +7,8 @@ use actix_web::{
 
 mod games;
 mod middleware;
-mod models;
-mod types;
+pub mod models;
+pub mod types;
 mod users;
 
 pub fn api_sesion_middleware() -> SessionMiddleware<CookieSessionStore> {
