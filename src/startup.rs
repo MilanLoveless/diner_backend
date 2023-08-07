@@ -1,9 +1,12 @@
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
+
+use super::connectors::discord::DiscordApi;
+use super::scopes::api::api_sesion_middleware;
+
 // use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use super::connectors::oauth::*;
-use super::routes::health_check;
-use super::routes::oauth::{get_oauth_url, oauth_redirect, oauth_revoke};
+use super::scopes::{api, auth, health_check, oauth};
 use sqlx::PgPool;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
@@ -12,6 +15,7 @@ pub fn run(
     listener: TcpListener,
     pool: PgPool,
     oauth: OauthClient,
+    discord_api: DiscordApi,
 ) -> Result<Server, std::io::Error> {
     // SSL
     // let mut ssl_builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
@@ -27,12 +31,13 @@ pub fn run(
 
     // Server
     let server = HttpServer::new(move || {
+        // App
         App::new()
             .wrap(TracingLogger::default())
-            .route("/oauth/url", web::get().to(get_oauth_url))
-            .route("/oauth/token", web::delete().to(oauth_revoke))
-            .route("/oauth/redirect", web::get().to(oauth_redirect))
-            .route("/health_check", web::get().to(health_check))
+            .service(api::get_api_scope().wrap(api_sesion_middleware()))
+            .service(auth::get_auth_scope())
+            .service(oauth::get_oauth2_scope())
+            .route("/health_check", web::get().to(health_check::health_check))
             .app_data(pool.clone())
             .app_data(oauth.clone())
     })

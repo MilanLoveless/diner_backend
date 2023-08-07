@@ -69,7 +69,7 @@ impl OauthClient {
     }
 
     pub async fn get_token(
-        &mut self,
+        &self,
         code: String,
         state: String,
     ) -> Result<StandardTokenResponse<EmptyExtraTokenFields, BasicTokenType>, String> {

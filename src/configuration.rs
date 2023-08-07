@@ -1,10 +1,16 @@
 use config;
 use secrecy::{ExposeSecret, Secret};
+use serde::Deserialize;
 use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::postgres::{PgConnectOptions, PgSslMode};
 use sqlx::ConnectOptions;
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
+pub struct DiscordApiSettings {
+    url: String,
+}
+
+#[derive(Deserialize)]
 pub struct DatabaseSettings {
     pub username: String,
     pub password: Secret<String>,
@@ -15,21 +21,22 @@ pub struct DatabaseSettings {
     pub require_ssl: bool,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct Settings {
     pub database: DatabaseSettings,
     pub application: ApplicationSettings,
     pub discord_oauth: OauthSettings,
+    pub discord_api: DiscordApiSettings,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct ApplicationSettings {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub host: String,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct OauthSettings {
     pub client_id: String,
     pub client_secret: Secret<String>,
@@ -56,9 +63,8 @@ impl DatabaseSettings {
     }
 
     pub fn with_db(&self) -> PgConnectOptions {
-        let mut options = self.without_db().database(&self.database_name);
-        options.log_statements(tracing_log::log::LevelFilter::Trace);
-        options
+        let options = self.without_db().database(&self.database_name);
+        options.log_statements(tracing_log::log::LevelFilter::Trace)
     }
 }
 

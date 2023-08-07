@@ -1,5 +1,5 @@
 use diner_backend::configuration::{get_configuration, DatabaseSettings};
-use diner_backend::connectors::OauthClient;
+use diner_backend::connectors::{discord::DiscordApi, oauth::OauthClient};
 use diner_backend::telemetry::{get_subscriber, init_subscriber};
 use once_cell::sync::Lazy;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
@@ -35,13 +35,14 @@ pub async fn spawn_app() -> TestApp {
     // Config
     let mut configuration = get_configuration().expect("Failed to read configuration");
     configuration.database.database_name = Uuid::new_v4().to_string();
+    // Discord Api
+    let discord_api = DiscordApi::new("https://example.com".to_string());
     // Discord Oauth
-    let oauth = configuration.discord_oauth;
-    let oauth_client = OauthClient::new(&oauth);
+    let oauth_client = OauthClient::new(&configuration.discord_oauth);
     // PG
     let pool = configure_database(&configuration.database).await;
     // Server
-    let server = diner_backend::startup::run(listener, pool.clone(), oauth_client)
+    let server = diner_backend::startup::run(listener, pool.clone(), oauth_client, discord_api)
         .expect("Failed to bind address");
     // Launch the server as a background task
     // tokio::spawn returns a handle to the spawned future,
