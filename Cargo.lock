@@ -1099,6 +1099,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "sqlx",
+ "ssl",
  "tokio",
  "tracing",
  "tracing-actix-web",
@@ -3637,6 +3638,12 @@ dependencies = [
  "url",
  "uuid",
 ]
+
+[[package]]
+name = "ssl"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "976e35d7591814d7fff1259c8f27f46acd0341eea90cec82b7e404738ee349d3"
 
 [[package]]
 name = "static_assertions"
