@@ -1,7 +1,7 @@
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
 
-use super::connectors::discord::DiscordApi;
+use super::connectors::{discord::DiscordApi, session::SessionStore};
 use super::scopes::api::api_sesion_middleware;
 
 // use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
@@ -16,6 +16,7 @@ pub fn run(
     pool: PgPool,
     oauth: OauthClient,
     discord_api: DiscordApi,
+    session_store: SessionStore,
 ) -> Result<Server, std::io::Error> {
     // SSL
     // let mut ssl_builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
@@ -39,8 +40,9 @@ pub fn run(
             .service(oauth::get_oauth2_scope())
             .route("/health_check", web::get().to(health_check::health_check))
             .app_data(pool.clone())
-            .app_data(oauth.clone())
-            .app_data(discord_api.clone())
+            .app_data(web::Data::new(oauth.clone()))
+            .app_data(web::Data::new(discord_api.clone()))
+            .app_data(web::Data::new(session_store.clone()))
     })
     // .bind_openssl("127.0.0.1:8080", ssl_builder)?
     .listen(listener)?
