@@ -7,11 +7,8 @@ database:
   password: "password"
   database_name: "diner"
 discord_oauth:
-  client_id: "1136444810895577279"
-  client_secret: "73J1ksKkPTfarnceKMKkGsuZHw9Q0IQR"
-  discord_auth_url: "https://discord.com/oauth2/authorize"
-  discord_token_url: "https://discord.com/api/oauth2/token"
-  discord_revoke_url: "https://discord.com/api/oauth2/token/revoke"
-  redirect_url: "http://localhost:8000/oauth2/redirect"
+  auth_url: "https://discord.com/oauth2/authorize"
+  token_url: "https://discord.com/api/oauth2/token"
+  revoke_url: "https://discord.com/api/oauth2/token/revoke"
 discord_api:
-  url: "example url"
+  url: "https://discordapp.com/api"

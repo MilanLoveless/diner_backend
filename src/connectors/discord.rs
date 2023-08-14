@@ -25,7 +25,7 @@ impl DiscordApi {
         token: StandardTokenResponse<EmptyExtraTokenFields, BasicTokenType>,
     ) -> Result<DiscordUserRecord, String> {
         let response = reqwest::Client::new()
-            .get("https://discordapp.com/api/users/@me")
+            .get(format!("{}/users/@me", self.url))
             .header("Accept", "application/json")
             .bearer_auth(token.access_token().secret())
             .send()
