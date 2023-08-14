@@ -4,12 +4,16 @@ use uuid::Uuid;
 #[derive(Deserialize, Serialize)]
 pub struct UserFormData {
     pub username: String,
-    pub avatar: String,
+    pub avatar: Option<String>,
+    pub banner: Option<String>,
+    pub global_name: String,
 }
 
 #[derive(Deserialize, Serialize)]
 pub struct UserRecord {
     pub id: Uuid,
     pub username: String,
-    pub avatar: String,
+    pub avatar: Option<String>,
+    pub banner: Option<String>,
+    pub global_name: String,
 }

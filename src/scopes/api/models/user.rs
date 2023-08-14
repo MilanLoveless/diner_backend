@@ -7,7 +7,7 @@ use uuid::Uuid;
 pub async fn get(pool: &PgPool, id: Uuid) -> Result<UserRecord, sqlx::Error> {
     let record = sqlx::query!(
         r#"
-SELECT id, discord_id, avatar FROM users
+SELECT id, username, avatar, banner, global_name FROM users
 WHERE id = $1
     "#,
         id,
@@ -16,8 +16,10 @@ WHERE id = $1
     .await
     .map(|r| UserRecord {
         id: r.id,
-        username: r.discord_id,
+        username: r.username,
         avatar: r.avatar,
+        banner: r.banner,
+        global_name: r.global_name,
     })
     .map_err(|e| {
         tracing::error!("Failed to execute query: {:?}", e);
@@ -30,23 +32,22 @@ WHERE id = $1
 }
 
 #[tracing::instrument(name = "Fetching existing user from the database", skip(pool))]
-pub async fn get_by_discord_id(
-    pool: &PgPool,
-    discord_id: &String,
-) -> Result<UserRecord, sqlx::Error> {
+pub async fn get_by_username(pool: &PgPool, username: &String) -> Result<UserRecord, sqlx::Error> {
     let record = sqlx::query!(
         r#"
-SELECT id, discord_id, avatar FROM users
-WHERE discord_id = $1
+SELECT id, username, avatar, banner, global_name FROM users
+WHERE username = $1
     "#,
-        discord_id,
+        username,
     )
     .fetch_one(pool)
     .await
     .map(|r| UserRecord {
         id: r.id,
-        username: r.discord_id,
+        username: r.username,
         avatar: r.avatar,
+        banner: r.banner,
+        global_name: r.global_name,
     })
     .map_err(|e| {
         tracing::error!("Failed to execute query: {:?}", e);
@@ -63,12 +64,14 @@ pub async fn insert(pool: &PgPool, form: &UserFormData) -> Result<Uuid, sqlx::Er
     let id = Uuid::new_v4();
     sqlx::query!(
         r#"
-INSERT INTO users (id, discord_id, avatar, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO users (id, username, avatar, banner, global_name, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
     "#,
         id,
         form.username,
         form.avatar,
+        form.banner,
+        form.global_name,
         Utc::now(),
         Utc::now()
     )
@@ -88,7 +91,7 @@ VALUES ($1, $2, $3, $4, $5)
 pub async fn update(pool: &PgPool, id: &Uuid, form: &UserFormData) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"
-UPDATE users SET discord_id = $1, avatar = $2, updated_at = $3
+UPDATE users SET username = $1, avatar = $2, updated_at = $3
 WHERE id = $4
     "#,
         form.username,
@@ -112,7 +115,7 @@ WHERE id = $4
 pub async fn delete(pool: &PgPool, id: Uuid) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"
-DELETE FROM games
+DELETE FROM users
 WHERE id = $1
     "#,
         id,

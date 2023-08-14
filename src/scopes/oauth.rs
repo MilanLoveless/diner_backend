@@ -46,14 +46,16 @@ async fn redirect(
         .get_token(data.code.to_owned(), data.state.to_owned())
         .await
     {
-        if let Ok(discord_user) = discord_api.get_user(token) {
+        if let Ok(discord_user) = discord_api.get_user(token).await {
             let mut user_id: Option<Uuid> = None;
-            if let Ok(user_record) = user::get_by_discord_id(&pool, &discord_user.username).await {
+            if let Ok(user_record) = user::get_by_username(&pool, &discord_user.username).await {
                 user_id = Some(user_record.id);
             } else {
                 let user = UserFormData {
                     username: discord_user.username,
                     avatar: discord_user.avatar,
+                    banner: discord_user.banner,
+                    global_name: discord_user.global_name,
                 };
                 if let Ok(id) = user::insert(&pool, &user).await {
                     user_id = Some(id);
@@ -76,6 +78,6 @@ async fn revoke() -> HttpResponse {
 pub fn get_oauth2_scope() -> Scope {
     web::scope("/oauth2")
         .route("/url", web::get().to(get_url))
-        .route("/redirect", web::delete().to(redirect))
+        .route("/redirect", web::get().to(redirect))
         .route("/revoke", web::get().to(revoke))
 }
