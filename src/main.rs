@@ -2,7 +2,7 @@ use diner_backend::configuration::get_configuration;
 use diner_backend::connectors::{discord::DiscordApi, oauth::OauthClient, session::SessionStore};
 use diner_backend::startup::run;
 use diner_backend::telemetry::*;
-use sqlx::PgPool;
+use sqlx::postgres::PgPoolOptions;
 use std::net::TcpListener;
 
 #[tokio::main]
@@ -17,9 +17,9 @@ async fn main() -> Result<(), std::io::Error> {
     // Discord Oauth
     let discord_oauth = OauthClient::new(&configuration.discord_oauth);
     // PG
-    let pool = PgPool::connect_with(configuration.database.with_db())
-        .await
-        .expect("Failed to connect to Postgres.");
+    let connection_pool = PgPoolOptions::new()
+        .acquire_timeout(std::time::Duration::from_secs(2))
+        .connect_lazy_with(configuration.database.with_db());
     // Session
     let session_store = SessionStore::new("something".to_string());
     // Server
@@ -28,5 +28,12 @@ async fn main() -> Result<(), std::io::Error> {
         configuration.application.host, configuration.application.port
     );
     let listener = TcpListener::bind(address)?;
-    run(listener, pool, discord_oauth, discord_api, session_store)?.await
+    run(
+        listener,
+        connection_pool,
+        discord_oauth,
+        discord_api,
+        session_store,
+    )?
+    .await
 }
