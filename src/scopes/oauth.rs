@@ -1,6 +1,6 @@
 use super::super::connectors::{discord::DiscordApi, oauth::OauthClient, session::SessionStore};
-use super::api::models::user;
-use super::types::UserFormData;
+use super::super::domain::UserFormData;
+use super::super::models::user;
 use actix_web::{web, HttpResponse, Scope};
 use serde::Serialize;
 use sqlx::PgPool;

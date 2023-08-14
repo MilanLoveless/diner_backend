@@ -11,7 +11,7 @@ name = "diner_backend"
 path = "src/lib.rs"
 
 [dependencies]
-actix-session = { version = "0.7.2", features = ["cookie-session"] }
+actix-session = { version = "0.7", features = ["cookie-session"] }
 actix-web = { version = "4", features = ["openssl"] }
 chrono = { version = "0.4.22", default-features = false, features = ["clock"] }
 config = "0.13.3"
@@ -33,6 +33,8 @@ tracing-log = "0.1"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
 unicode-segmentation = "1"
 uuid = { version = "1", features = ["v4", "serde"] }
+validator = "0.16.1"
+url = "2.4.0"
 
 [dependencies.oauth2]
 version = "4.2"
