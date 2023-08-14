@@ -31,9 +31,9 @@ impl OauthClient {
         Self {
             client_id: config.client_id.clone(),
             client_secret: config.client_secret.clone(),
-            auth_url: config.discord_auth_url.clone(),
-            token_url: config.discord_token_url.clone(),
-            revoke_url: config.discord_token_url.clone(),
+            auth_url: config.auth_url.clone(),
+            token_url: config.token_url.clone(),
+            revoke_url: config.token_url.clone(),
             redirect_url: config.redirect_url.clone(),
             pkce_hash_map: Arc::new(Mutex::new(HashMapDelay::new(
                 std::time::Duration::from_secs(15 * 60),

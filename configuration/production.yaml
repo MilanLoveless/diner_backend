@@ -2,3 +2,5 @@ application:
   host: 0.0.0.0
 database:
   require_ssl: true
+discord_oauth:
+  redirect_url: "https://api.rpg-diner.com/oauth2/redirect"

@@ -13,7 +13,7 @@ async fn main() -> Result<(), std::io::Error> {
     let subscriber = get_subscriber("diner_backend".into(), "info".into(), std::io::stdout);
     init_subscriber(subscriber);
     // Discord Api
-    let discord_api = DiscordApi::new("https://example.com".to_string());
+    let discord_api = DiscordApi::new(configuration.discord_api.url);
     // Discord Oauth
     let discord_oauth = OauthClient::new(&configuration.discord_oauth);
     // PG
