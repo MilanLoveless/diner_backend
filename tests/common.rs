@@ -42,7 +42,7 @@ pub async fn spawn_app() -> TestApp {
     // PG
     let pool = configure_database(&configuration.database).await;
     // Session
-    let session_store = SessionStore::new("something".to_string());
+    let session_store = SessionStore {};
     // Server
     let server = diner_backend::startup::run(
         listener,
