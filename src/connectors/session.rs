@@ -1,3 +1,4 @@
+use actix_session::Session;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
