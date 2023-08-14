@@ -19,7 +19,6 @@ delay_map = "0.3.0"
 hmac = "0.12.1"
 jsonwebtoken = "8.3.0"
 openssl = { version = "0.10", features = ["v110"] }
-reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
 secrecy = { version = "0.8", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "^1"
@@ -32,13 +31,17 @@ tracing-bunyan-formatter = "0.3"
 tracing-log = "0.1"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
 unicode-segmentation = "1"
-uuid = { version = "1", features = ["v4", "serde"] }
-validator = "0.16.1"
 url = "2.4.0"
+uuid = { version = "1", features = ["v4", "serde"] }
 
 [dependencies.oauth2]
 version = "4.2"
 features = ["reqwest"]
+
+[dependencies.reqwest]
+version = "0.11"
+default-features = false
+features = ["json", "rustls-tls"]
 
 [dependencies.sqlx]
 version = "0.7"
