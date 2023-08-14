@@ -1,5 +1,6 @@
 use oauth2::basic::BasicTokenType;
 use oauth2::{EmptyExtraTokenFields, StandardTokenResponse, TokenResponse};
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
@@ -13,18 +14,23 @@ pub struct DiscordUserRecord {
 #[derive(Clone)]
 pub struct DiscordApi {
     url: String,
+    client: Client,
 }
 
 impl DiscordApi {
     pub fn new(url: String) -> Self {
-        Self { url }
+        Self {
+            url,
+            client: Client::new(),
+        }
     }
 
     pub async fn get_user(
         &self,
         token: StandardTokenResponse<EmptyExtraTokenFields, BasicTokenType>,
     ) -> Result<DiscordUserRecord, String> {
-        let response = reqwest::Client::new()
+        let response = self
+            .client
             .get(format!("{}/users/@me", self.url))
             .header("Accept", "application/json")
             .bearer_auth(token.access_token().secret())
