@@ -3,4 +3,6 @@ application:
 database:
   require_ssl: false
 discord_oauth:
+  client_id: "12345"
+  client_secret: "54321"
   redirect_url: "http://localhost:8000/oauth2/redirect"
