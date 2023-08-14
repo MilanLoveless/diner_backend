@@ -21,7 +21,7 @@ async fn main() -> Result<(), std::io::Error> {
         .acquire_timeout(std::time::Duration::from_secs(2))
         .connect_lazy_with(configuration.database.with_db());
     // Session
-    let session_store = SessionStore::new("something".to_string());
+    let session_store = SessionStore {};
     // Server
     let address = format!(
         "{}:{}",

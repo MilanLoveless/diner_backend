@@ -61,8 +61,8 @@ async fn redirect(
                     user_id = Some(id);
                 }
             }
-            if let Some(id) = user_id {
-                if let Ok(session) = session_store.create(id) {
+            if let Some(_id) = user_id {
+                if let Ok(session) = session_store.create() {
                     return HttpResponse::Ok().json(session);
                 }
             }
