@@ -1,4 +1,5 @@
-use super::super::super::{domain::*, models::game};
+use super::super::super::models::game;
+use super::super::super::types::game::{GameData, GameFormData};
 use actix_web::{web, HttpRequest, HttpResponse};
 use sqlx::PgPool;
 use uuid::Uuid;

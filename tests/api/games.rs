@@ -4,7 +4,7 @@
 // You can inspect what code gets generated using
 // `cargo expand --test health_check` (<- name of the test file)
 use crate::helpers::{spawn_app, TestApp};
-use diner_backend::domain::GameFormData;
+use diner_backend::types::GameFormData;
 use rstest::rstest;
 use sqlx::query;
 use uuid::Uuid;

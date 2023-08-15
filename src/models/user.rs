@@ -1,4 +1,4 @@
-use super::super::domain::{UserFormData, UserRecord};
+use super::super::types::{UserFormData, UserRecord};
 use chrono::Utc;
 use sqlx::PgPool;
 use uuid::Uuid;
