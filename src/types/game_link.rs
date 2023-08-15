@@ -4,13 +4,12 @@ use url::Url;
 pub struct GameLink(String);
 
 impl GameLink {
-    /// Returns an instance of `SubscriberName` if the input satisfies all
-    /// our validation constraints on subscriber names.
-    /// It panics otherwise.
+    /// Returns an instance of `GameLink` if the input satisfies all
+    /// our validation constraints on links.
+    /// It returns an Err otherwise.
     pub fn parse(s: String) -> Result<GameLink, String> {
-        let _ = match Url::parse(s.as_str()) {
-            Ok(_) => "",
-            Err(_) => return Err("Invalid url".to_string()),
+        if Url::parse(s.as_str()).is_err() {
+            return Err("Invalid url".to_string());
         };
         // `.trim()` returns a view over the input `s` without trailing
         // whitespace-like characters.
