@@ -8,7 +8,10 @@ impl GameLink {
     /// our validation constraints on subscriber names.
     /// It panics otherwise.
     pub fn parse(s: String) -> Result<GameLink, String> {
-        let _ = Url::parse(s.as_str()).expect("invalid url");
+        let _ = match Url::parse(s.as_str()) {
+            Ok(_) => "",
+            Err(_) => return Err("Invalid url".to_string()),
+        };
         // `.trim()` returns a view over the input `s` without trailing
         // whitespace-like characters.
         // `.is_empty` checks if the view contains any character.
@@ -18,7 +21,7 @@ impl GameLink {
         //
         // `graphemes` returns an iterator over the graphemes in the input `s`.
         // `true` specifies that we want to use the extended grapheme definition set, // the recommended one.
-        let is_too_long = s.graphemes(true).count() > 256;
+        let is_too_long = s.graphemes(true).count() > 2048;
 
         if is_empty_or_whitespace || is_too_long {
             Err(format!("{} is not a valid game name.", s))

@@ -4,15 +4,15 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 #[tracing::instrument(
-    name = "Adding a new game", skip(form, pool),
+    name = "Adding a new game", skip(payload, pool),
     fields(
-        game_name = %form.name,
-        game_description = %form.description,
-        game_link = %form.link
+        game_name = %payload.name,
+        game_description = %payload.description,
+        game_link = %payload.link
     )
 )]
-pub async fn create(form: web::Form<GameFormData>, pool: web::Data<PgPool>) -> HttpResponse {
-    let game_data = match GameData::try_from(form.0) {
+pub async fn create(payload: web::Json<GameFormData>, pool: web::Data<PgPool>) -> HttpResponse {
+    let game_data = match GameData::try_from(payload.0) {
         Ok(g) => g,
         Err(_) => return HttpResponse::BadRequest().finish(),
     };
@@ -32,10 +32,10 @@ pub async fn get(request: HttpRequest, pool: web::Data<PgPool>) -> HttpResponse 
 
 pub async fn update(
     request: HttpRequest,
-    form: web::Form<GameFormData>,
+    payload: web::Json<GameFormData>,
     pool: web::Data<PgPool>,
 ) -> HttpResponse {
-    let game_data = match GameData::try_from(form.0) {
+    let game_data = match GameData::try_from(payload.0) {
         Ok(g) => g,
         Err(_) => return HttpResponse::BadRequest().finish(),
     };

@@ -3,12 +3,12 @@
 // It also spares you from having to specify the `#[test]` attribute. //
 // You can inspect what code gets generated using
 // `cargo expand --test health_check` (<- name of the test file)
-mod common;
+use crate::helpers;
 
 #[tokio::test]
 async fn health_check_works() {
     // Arrange
-    let app = common::spawn_app().await;
+    let app = helpers::spawn_app().await;
     // We need to bring in `reqwest`
     // to perform HTTP requests against our application.
     let client = reqwest::Client::new();

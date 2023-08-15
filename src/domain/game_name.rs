@@ -15,7 +15,7 @@ impl GameName {
         //
         // `graphemes` returns an iterator over the graphemes in the input `s`.
         // `true` specifies that we want to use the extended grapheme definition set, // the recommended one.
-        let is_too_long = s.graphemes(true).count() > 256;
+        let is_too_long = s.graphemes(true).count() > 2048;
 
         if is_empty_or_whitespace || is_too_long {
             Err(format!("{} is not a valid game name.", s))
