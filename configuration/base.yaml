@@ -8,9 +8,9 @@ database:
   database_name: "diner"
 discord_oauth:
   uri: "https://discord.com"
-  auth_url: "/oauth2/authorize"
-  token_url: "/api/oauth2/token"
-  revoke_url: "/api/oauth2/token/revoke"
+  auth_path: "/oauth2/authorize"
+  token_path: "/api/oauth2/token"
+  revoke_path: "/api/oauth2/token/revoke"
 discord_api:
   uri: "https://discordapp.com"
   user_path: "/api/users/@me"

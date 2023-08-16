@@ -1,40 +1,30 @@
 //! tests/api/oauth.rs
 use crate::helpers::{spawn_app, TestApp};
-use serde::de::value::StringDeserializer;
 use serde::{Deserialize, Serialize};
-use serde_urlencoded::Deserializer;
 use std::collections::HashMap;
 use url::Url;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, ResponseTemplate};
 
 impl TestApp {
-    pub async fn get_url(&self) -> reqwest::Response {
+    async fn get_url(&self) -> reqwest::Response {
         self.get("oauth2/url").await
     }
 
-    pub async fn get_redirect(&self, query: &str) -> reqwest::Response {
+    async fn get_redirect(&self, query: &RedirectQueryParams) -> reqwest::Response {
         self.get_with_query("oauth2/redirect", query).await
     }
 
-    pub async fn get_revoke(&self, query: &str) -> reqwest::Response {
-        self.get_with_query("oauth2/revoke", todo!()).await
+    async fn get_revoke(&self, query: &RedirectQueryParams) -> reqwest::Response {
+        self.get_with_query::<RedirectQueryParams>("oauth2/revoke", query)
+            .await
     }
 }
 
-// {
-//     "id": "80351110224678912",
-//     "username": "Nelly",
-//     "discriminator": "1337",
-//     "avatar": "8342729096ea3675442027381ff50dfe",
-//     "verified": true,
-//     "email": "nelly@discord.com",
-//     "flags": 64,
-//     "banner": "06c16474723fe537c283b8efa61a30c8",
-//     "accent_color": 16711680,
-//     "premium_type": 1,
-//     "public_flags": 64
-//}
+#[derive(Deserialize)]
+struct UrlResponse {
+    pub url: String,
+}
 
 #[derive(Serialize)]
 struct DiscordUserResponse {
@@ -59,6 +49,12 @@ struct DiscordTokenResponse {
     scope: String,
 }
 
+#[derive(Serialize)]
+struct RedirectQueryParams {
+    pub code: String,
+    pub state: String,
+}
+
 #[tokio::test]
 async fn get_url_works() {
     // Arrange
@@ -76,16 +72,9 @@ async fn oauth_calls_discord() {
     // Arrange
     let app = spawn_app().await;
     // Get 3rd Party Oauth2 Provider Auth url
-    let url_value = app
-        .get_url()
-        .await
-        .json::<HashMap<String, String>>()
-        .await
-        .unwrap()
-        .remove("url")
-        .unwrap();
+    let url_response = app.get_url().await.json::<UrlResponse>().await.unwrap();
     // Query Params from parsed Url
-    let mut query_info: HashMap<_, _> = Url::parse(&url_value)
+    let mut query_info: HashMap<_, _> = Url::parse(&url_response.url)
         .unwrap()
         .query_pairs()
         .into_owned()
@@ -136,14 +125,17 @@ async fn oauth_calls_discord() {
         .await;
     // Discord Api
     Mock::given(path("/api/users/@me"))
-        .and(method("POST"))
+        .and(method("GET"))
         .respond_with(ResponseTemplate::new(200).set_body_json(user_body))
         .expect(1)
         .mount(&app.discord_api)
         .await;
     // Act
-    let query = format!("state={}&code=12345", state);
-    app.get_redirect(query.as_str()).await;
+    let query = RedirectQueryParams {
+        state,
+        code: "12345".to_string(),
+    };
+    app.get_redirect(&query).await;
     // Assert
     // Mock asserts on drop
 }

@@ -59,7 +59,10 @@ impl TestApp {
             .expect("Failed to execute request.")
     }
 
-    pub async fn get_with_query(&self, path: &str, query: &str) -> reqwest::Response {
+    pub async fn get_with_query<T>(&self, path: &str, query: &T) -> reqwest::Response
+    where
+        T: Serialize + ?Sized,
+    {
         reqwest::Client::new()
             .get(&format!("{}/{}", &self.address, path))
             .header("Content-Type", "application/json")

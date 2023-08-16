@@ -9,7 +9,7 @@ pub struct DiscordUserRecord {
     pub username: String,
     pub avatar: Option<String>,
     pub banner: Option<String>,
-    pub global_name: String,
+    pub global_name: Option<String>,
 }
 
 #[derive(Clone)]

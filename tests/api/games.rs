@@ -12,23 +12,23 @@ use uuid::Uuid;
 const GAMES: &str = "api/games";
 
 impl TestApp {
-    pub async fn post_games(&self, payload: &GameFormData) -> reqwest::Response {
+    async fn post_games(&self, payload: &GameFormData) -> reqwest::Response {
         self.post(GAMES, payload).await
     }
 
-    pub async fn get_games(&self) -> reqwest::Response {
+    async fn get_games(&self) -> reqwest::Response {
         self.get(GAMES).await
     }
 
-    pub async fn get_games_by_id(&self, id: Uuid) -> reqwest::Response {
+    async fn get_games_by_id(&self, id: Uuid) -> reqwest::Response {
         self.get_by_id(GAMES, id).await
     }
 
-    pub async fn put_games(&self, payload: &GameFormData, id: Uuid) -> reqwest::Response {
+    async fn put_games(&self, payload: &GameFormData, id: Uuid) -> reqwest::Response {
         self.put(GAMES, payload, id).await
     }
 
-    pub async fn delete_games(&self, id: Uuid) -> reqwest::Response {
+    async fn delete_games(&self, id: Uuid) -> reqwest::Response {
         self.delete(GAMES, id).await
     }
 }
