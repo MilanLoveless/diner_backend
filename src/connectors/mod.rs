@@ -2,7 +2,6 @@ pub mod discord;
 pub mod oauth;
 pub mod session;
 
-pub struct Connectors {
-    pub discord: discord::DiscordApi,
-    pub oauth: oauth::OauthClient,
-}
+pub use discord::DiscordApi;
+pub use oauth::OauthClient;
+pub use session::SessionStore;

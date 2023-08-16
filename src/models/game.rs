@@ -1,4 +1,4 @@
-use super::super::domain::{GameData, GameRecord};
+use crate::types::{GameData, GameRecord};
 use chrono::Utc;
 use sqlx::PgPool;
 use uuid::Uuid;

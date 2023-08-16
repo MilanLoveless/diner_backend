@@ -5,12 +5,13 @@ use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::postgres::{PgConnectOptions, PgSslMode};
 use sqlx::ConnectOptions;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct DiscordApiSettings {
-    pub url: String,
+    pub uri: String,
+    pub user_path: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct DatabaseSettings {
     pub username: String,
     pub password: Secret<String>,
@@ -21,7 +22,7 @@ pub struct DatabaseSettings {
     pub require_ssl: bool,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Settings {
     pub database: DatabaseSettings,
     pub application: ApplicationSettings,
@@ -29,20 +30,21 @@ pub struct Settings {
     pub discord_api: DiscordApiSettings,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct ApplicationSettings {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub host: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct OauthSettings {
     pub client_id: String,
     pub client_secret: Secret<String>,
-    pub auth_url: String,
-    pub token_url: String,
-    pub revoke_url: String,
+    pub uri: String,
+    pub auth_path: String,
+    pub token_path: String,
+    pub revoke_path: String,
     pub redirect_url: String,
 }
 

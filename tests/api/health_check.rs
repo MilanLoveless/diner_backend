@@ -1,14 +1,10 @@
-//! tests/health_check.rs
-// `tokio::test` is the testing equivalent of `tokio::main`.
-// It also spares you from having to specify the `#[test]` attribute. //
-// You can inspect what code gets generated using
-// `cargo expand --test health_check` (<- name of the test file)
-mod common;
+//! tests/api/health_check.rs
+use crate::helpers::spawn_app;
 
 #[tokio::test]
 async fn health_check_works() {
     // Arrange
-    let app = common::spawn_app().await;
+    let app = spawn_app().await;
     // We need to bring in `reqwest`
     // to perform HTTP requests against our application.
     let client = reqwest::Client::new();

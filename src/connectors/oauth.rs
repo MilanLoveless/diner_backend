@@ -1,4 +1,4 @@
-use super::super::configuration::OauthSettings;
+use crate::configuration::OauthSettings;
 use delay_map::HashMapDelay;
 use oauth2::basic::BasicClient;
 use oauth2::basic::{
@@ -19,9 +19,10 @@ use std::sync::{Arc, Mutex};
 pub struct OauthClient {
     client_id: String,
     client_secret: Secret<String>,
-    auth_url: String,
-    token_url: String,
-    revoke_url: String,
+    uri: String,
+    auth_path: String,
+    token_path: String,
+    revoke_path: String,
     redirect_url: String,
     pkce_hash_map: Arc<Mutex<HashMapDelay<String, PkceCodeVerifier>>>,
 }
@@ -31,9 +32,10 @@ impl OauthClient {
         Self {
             client_id: config.client_id.clone(),
             client_secret: config.client_secret.clone(),
-            auth_url: config.auth_url.clone(),
-            token_url: config.token_url.clone(),
-            revoke_url: config.token_url.clone(),
+            uri: config.uri.clone(),
+            auth_path: config.auth_path.clone(),
+            token_path: config.token_path.clone(),
+            revoke_path: config.revoke_path.clone(),
             redirect_url: config.redirect_url.clone(),
             pkce_hash_map: Arc::new(Mutex::new(HashMapDelay::new(
                 std::time::Duration::from_secs(15 * 60),
@@ -99,7 +101,6 @@ impl OauthClient {
         &self,
         token: StandardTokenResponse<EmptyExtraTokenFields, BasicTokenType>,
     ) {
-        print!("revoke url: {}", self.revoke_url);
         let client = self.get_client().expect("Nope!");
         // Revoke the obtained token
         let token_to_revoke = match token.refresh_token() {
@@ -133,15 +134,20 @@ impl OauthClient {
             Some(ClientSecret::new(
                 self.client_secret.expose_secret().to_string(),
             )),
-            AuthUrl::new(self.auth_url.clone()).expect("Invalid auth endpoint URL"),
-            Some(TokenUrl::new(self.token_url.clone()).expect("Invalid token endpoint URL")),
+            AuthUrl::new(format!("{}{}", self.uri, self.auth_path))
+                .expect("Invalid auth endpoint URL"),
+            Some(
+                TokenUrl::new(format!("{}{}", self.uri, self.token_path))
+                    .expect("Invalid token endpoint URL"),
+            ),
         )
         // Set the URL the user will be redirected to after the authorization process.
         .set_redirect_uri(
             RedirectUrl::new(self.redirect_url.clone()).expect("Invalid redirect endpoint URL"),
         )
         .set_revocation_uri(
-            RevocationUrl::new(self.revoke_url.clone()).expect("Invalid revocation endpoint URL"),
+            RevocationUrl::new(format!("{}{}", self.uri, self.revoke_path))
+                .expect("Invalid revocation endpoint URL"),
         );
         Ok(client)
     }

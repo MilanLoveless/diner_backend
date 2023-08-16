@@ -2,7 +2,7 @@ use super::{game_description::GameDescription, game_link::GameLink, game_name::G
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct GameFormData {
     pub name: String,
     pub description: String,

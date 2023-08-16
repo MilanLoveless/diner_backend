@@ -5,7 +5,7 @@ CREATE TABLE users(
    username TEXT NOT NULL,
    avatar TEXT,
    banner TEXT,
-   global_name TEXT NOT NULL,
+   global_name TEXT,
    created_at timestamptz NOT NULL,
    updated_at timestamptz NOT NULL
 );

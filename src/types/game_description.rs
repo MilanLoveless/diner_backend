@@ -1,14 +1,12 @@
 use unicode_segmentation::UnicodeSegmentation;
-use url::Url;
 
-pub struct GameLink(String);
+pub struct GameDescription(String);
 
-impl GameLink {
+impl GameDescription {
     /// Returns an instance of `SubscriberName` if the input satisfies all
     /// our validation constraints on subscriber names.
     /// It panics otherwise.
-    pub fn parse(s: String) -> Result<GameLink, String> {
-        let _ = Url::parse(s.as_str()).expect("invalid url");
+    pub fn parse(s: String) -> Result<GameDescription, String> {
         // `.trim()` returns a view over the input `s` without trailing
         // whitespace-like characters.
         // `.is_empty` checks if the view contains any character.
@@ -18,7 +16,7 @@ impl GameLink {
         //
         // `graphemes` returns an iterator over the graphemes in the input `s`.
         // `true` specifies that we want to use the extended grapheme definition set, // the recommended one.
-        let is_too_long = s.graphemes(true).count() > 256;
+        let is_too_long = s.graphemes(true).count() > 2048;
 
         if is_empty_or_whitespace || is_too_long {
             Err(format!("{} is not a valid game name.", s))
@@ -28,7 +26,7 @@ impl GameLink {
     }
 }
 
-impl AsRef<str> for GameLink {
+impl AsRef<str> for GameDescription {
     fn as_ref(&self) -> &str {
         &self.0
     }

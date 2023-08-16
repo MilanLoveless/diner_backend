@@ -1,3 +1,4 @@
+use crate::configuration::DiscordApiSettings;
 use oauth2::basic::BasicTokenType;
 use oauth2::{EmptyExtraTokenFields, StandardTokenResponse, TokenResponse};
 use reqwest::Client;
@@ -8,19 +9,21 @@ pub struct DiscordUserRecord {
     pub username: String,
     pub avatar: Option<String>,
     pub banner: Option<String>,
-    pub global_name: String,
+    pub global_name: Option<String>,
 }
 
 #[derive(Clone)]
 pub struct DiscordApi {
-    url: String,
+    uri: String,
+    user_path: String,
     client: Client,
 }
 
 impl DiscordApi {
-    pub fn new(url: String) -> Self {
+    pub fn new(config: DiscordApiSettings) -> Self {
         Self {
-            url,
+            uri: config.uri,
+            user_path: config.user_path,
             client: Client::new(),
         }
     }
@@ -31,7 +34,7 @@ impl DiscordApi {
     ) -> Result<DiscordUserRecord, String> {
         let response = self
             .client
-            .get(format!("{}/users/@me", self.url))
+            .get(format!("{}{}", self.uri, self.user_path))
             .header("Accept", "application/json")
             .bearer_auth(token.access_token().secret())
             .send()

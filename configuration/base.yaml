@@ -7,8 +7,10 @@ database:
   password: "password"
   database_name: "diner"
 discord_oauth:
-  auth_url: "https://discord.com/oauth2/authorize"
-  token_url: "https://discord.com/api/oauth2/token"
-  revoke_url: "https://discord.com/api/oauth2/token/revoke"
+  uri: "https://discord.com"
+  auth_path: "/oauth2/authorize"
+  token_path: "/api/oauth2/token"
+  revoke_path: "/api/oauth2/token/revoke"
 discord_api:
-  url: "https://discordapp.com/api"
+  uri: "https://discordapp.com"
+  user_path: "/api/users/@me"
