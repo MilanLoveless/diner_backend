@@ -7,7 +7,8 @@ use sqlx::ConnectOptions;
 
 #[derive(Deserialize, Clone)]
 pub struct DiscordApiSettings {
-    pub url: String,
+    pub uri: String,
+    pub user_path: String,
 }
 
 #[derive(Deserialize, Clone)]
@@ -40,9 +41,10 @@ pub struct ApplicationSettings {
 pub struct OauthSettings {
     pub client_id: String,
     pub client_secret: Secret<String>,
-    pub auth_url: String,
-    pub token_url: String,
-    pub revoke_url: String,
+    pub uri: String,
+    pub auth_path: String,
+    pub token_path: String,
+    pub revoke_path: String,
     pub redirect_url: String,
 }
 

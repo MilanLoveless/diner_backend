@@ -1,5 +1,5 @@
-use super::super::super::models::game;
-use super::super::super::types::game::{GameData, GameFormData};
+use crate::models::game;
+use crate::types::game::{GameData, GameFormData};
 use actix_web::{web, HttpRequest, HttpResponse};
 use sqlx::PgPool;
 use uuid::Uuid;

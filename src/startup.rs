@@ -17,7 +17,7 @@ pub struct Application {
 impl Application {
     pub async fn build(configuration: Settings) -> Result<Self, std::io::Error> {
         // Discord Api
-        let discord_api = DiscordApi::new(configuration.discord_api.url);
+        let discord_api = DiscordApi::new(configuration.discord_api);
         // Discord Oauth
         let discord_oauth = OauthClient::new(&configuration.discord_oauth);
         // PG
