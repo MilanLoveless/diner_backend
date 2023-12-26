@@ -13,7 +13,7 @@ path = "src/lib.rs"
 [dependencies]
 actix-session = { version = "0.7", features = ["cookie-session"] }
 actix-web = { version = "4", features = ["openssl"] }
-chrono = { version = "0.4.22", default-features = false, features = ["clock"] }
+chrono = { version = "0.4.31", default-features = false, features = ["clock"] }
 config = "0.13"
 delay_map = "0.3"
 hmac = { version = "0.12", features = ["std"] }
