@@ -14,7 +14,7 @@ path = "src/lib.rs"
 actix-session = { version = "0.7", features = ["cookie-session"] }
 actix-web = { version = "4", features = ["openssl"] }
 chrono = { version = "0.4.34", default-features = false, features = ["clock"] }
-config = "0.13"
+config = "0.14"
 delay_map = "0.3"
 hmac = { version = "0.12", features = ["std"] }
 redis = "0.23"
